@@ -2,65 +2,69 @@
   <div
     id="module539"
     class="customcodeContainer module"
-    style="margin-top: 3%; margin-bottom: 7%"
+    style="margin-top: 3%; margin-bottom: 7%;"
   >
-    
+    <!-- ASSESSMENT.JS => HOSTED ON WEBFLOW -->
     <script>
       var assessmentAnswers;
-var qs;
-var queryString = new URLSearchParams(document.location.search);
+      var qs;
+      var queryString = new URLSearchParams(document.location.search);
 
-function showWheel() {
-    $(".questions, .stepIndicators").hide();
-    $(".results").fadeIn();
-}
+      function showWheel() {
+        $(".questions, .stepIndicators").hide();
+        $(".results").fadeIn();
+      }
 
-$(function () {
-    //check to see if coming from a share link. If so, immediately show wheel
-    if (queryString.toString().length > 100) {
-        updateWheel(queryString);
-        $("#mainImage").hide();
-        showWheel();
-    }
-
-    $(".nxtBtn").on("click", function (e) {
-        e.preventDefault();
-        $("#mainImage").hide();
-        var nextFieldset = $(this).parents("fieldset").next("fieldset");
-        $(this).parents("fieldset").fadeOut(function () {
-            $(nextFieldset).slideDown();
-            $(".crumb").removeClass("active");
-            $(".crumb").eq($("#assessment fieldset:visible").index()).addClass("active");
-            $(".assessmentBreadcrumb").siblings("h2").text($(".crumb.active").text());
-        });
-    });
-
-    $(".subBtn").on("click", function (e) {
-        e.preventDefault();
-       
-        // submit lead form data
-        var leadFormData = new FormData();
-
-        console.log(leadFormData);
-
-        var leadFormIsValid = true;
-
-        // check validity of form data and add to post
-        for (var i = 0; i < $(".leadForm input").length; i++) {
-            var formInput = $(".leadForm input").eq(i);
-            if (!$(formInput)[0].checkValidity()) {
-                leadFormIsValid = false;
-            }
-            leadFormData.append($(formInput).attr("id"), $(formInput).val());
+      $(function () {
+        //check to see if coming from a share link. If so, immediately show wheel
+        if (queryString.toString().length > 100) {
+          updateWheel(queryString);
+          $("#mainImage").hide();
+          showWheel();
         }
 
-        if (leadFormIsValid) {
-            console.log('lead form is valid');
+        $(".nxtBtn").on("click", function (e) {
+          e.preventDefault();
+          $("#mainImage").hide();
+          var nextFieldset = $(this).parents("fieldset").next("fieldset");
+          $(this)
+            .parents("fieldset")
+            .fadeOut(function () {
+              $(nextFieldset).slideDown();
+              $(".crumb").removeClass("active");
+              $(".crumb")
+                .eq($("#assessment fieldset:visible").index())
+                .addClass("active");
+              $(".assessmentBreadcrumb")
+                .siblings("h2")
+                .text($(".crumb.active").text());
+            });
+        });
+
+        $(".subBtn").on("click", function (e) {
+          e.preventDefault();
+
+          // submit lead form data
+          var leadFormData = new FormData();
+
+          var leadFormIsValid = true;
+
+          // check validity of form data and add to post
+          for (var i = 0; i < $(".leadForm input").length; i++) {
+            var formInput = $(".leadForm input").eq(i);
+            if (!$(formInput)[0].checkValidity()) {
+              leadFormIsValid = false;
+            }
+            leadFormData.append($(formInput).attr("id"), $(formInput).val());
+          }
+
+          if (leadFormIsValid) {
+            console.log("lead form is valid");
 
             // form is valid so hide questions and show wheel results
             $(".questions").slideUp(function () {
-                $(".stepIndicators").hide();
-                $(".results").fadeIn();
+              $(".stepIndicators").hide();
+              $(".results").fadeIn();
             });
 
             console.log($("#assessment").serialize());
@@ -74,60 +78,77 @@ $(function () {
 
             //add link back to finished brand wheel
             leadFormData.append("field5", "A new brand assessment submission");
-            leadFormData.append("field6", document.location.href + "?" + qs.toString());
+            leadFormData.append(
+              "field6",
+              document.location.href + "?" + qs.toString()
+            );
             $.ajax({
-                type: "POST",//From the form method
-                url: '/MailForm/Submit/534?pageID=42',//The URL of the form action  /Module/Render/378?pageID=138
-                data: leadFormData, // serializes the form's elements.
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    // redirect to thank-you page
-                    console.log("lead form successfully sent");
-                }
+              type: "POST", //From the form method
+              url: "/MailForm/Submit/534?pageID=42", //The URL of the form action  /Module/Render/378?pageID=138
+              data: leadFormData, // serializes the form's elements.
+              processData: false,
+              contentType: false,
+              success: function (data) {
+                // redirect to thank-you page
+                console.log("lead form successfully sent");
+              }
             });
-        }
-        else {
+          } else {
             $(".leadForm input").each(function () {
-                $(this)[0].reportValidity();
+              $(this)[0].reportValidity();
             });
-        }
+          }
+        });
 
-    });
+        $(".prevBtn").on("click", function (e) {
+          e.preventDefault();
+          var prevFieldset = $(this).parents("fieldset").prev("fieldset");
+          console.log("fieldset index = " + $(prevFieldset).index());
+          $(this)
+            .parents("fieldset")
+            .fadeOut(function () {
+              $(prevFieldset).slideDown();
+              $(".crumb").removeClass("active");
+              $(".crumb")
+                .eq($("#assessment fieldset:visible").index())
+                .addClass("active");
+            });
+        });
 
-    $(".prevBtn").on("click", function (e) {
-        e.preventDefault();
-        var prevFieldset = $(this).parents("fieldset").prev("fieldset");
-        console.log("fieldset index = " + $(prevFieldset).index());
-        $(this).parents("fieldset").fadeOut(function () {
-            $(prevFieldset).slideDown();
-            $(".crumb").removeClass("active");
-            $(".crumb").eq($("#assessment fieldset:visible").index()).addClass("active");
-        }
+        $("#bWheel [id^='shape-']").on("click", function () {
+          $(".well.description").fadeIn();
+          var shape = $(this).attr("id").split("shape-").pop();
+          $(".well").html(
+            "<h4 class='text-primary'>" +
+              shape.replace("--", "/").replace(/-/g, " ") +
+              "</h4><p>" +
+              $("input[name=" + shape + "]")
+                .parents(".form-group")
+                .children("label")
+                .text() +
+              "</p>"
+          );
+        });
+      });
+
+      function updateWheel(answers) {
+        console.log("update wheel running...");
+        console.log(answers);
+
+        answers.forEach(function (value, key) {
+          //console.log("#bWheel #shape-" + key + " gets this class " + value);
+          $("#bWheel #shape-" + key + " path").attr("class", value);
+          $("#bWheel #shape-" + key + " circle").attr("class", value);
+        });
+
+        $(".shareWheel").attr(
+          "href",
+          "mailto:contact@backstory.com?subject=Check+out+my+Brand+Wheel&body=" +
+            encodeURIComponent(
+              document.location.href + "?" + answers.toString()
+            )
         );
-    });
-
-    $("#bWheel [id^='shape-']").on("click", function () {
-        $(".well.description").fadeIn();
-        var shape = $(this).attr("id").split("shape-").pop();
-        $(".well").html("<h4 class='text-primary'>" + shape.replace('--', '/').replace(/-/g, ' ') + "</h4><p>" + $("input[name=" + shape + "]").parents(".form-group").children("label").text() + "</p>");
-    });
-});
-
-function updateWheel (answers) {
-    console.log('update wheel running...');
-    console.log(answers);
-
-    answers.forEach(function (value, key) {
-        //console.log("#bWheel #shape-" + key + " gets this class " + value);
-        $("#bWheel #shape-" + key + " path").attr("class", value)
-        $("#bWheel #shape-" + key + " circle").attr("class", value)
-    });
-
-    $(".shareWheel").attr("href", "mailto:contact@backstory.com?subject=Check+out+my+Brand+Wheel&body=" + encodeURIComponent(document.location.href + "?" + answers.toString()));
-}
-
-
+      }
     </script>
 
     <style>
@@ -231,7 +252,9 @@ function updateWheel (answers) {
 
               <div class="form-group">
                 <label class="brand-label">Brand Purpose</label>
-                <div class="label-subheading">The difference you make beyond making money.</div>
+                <div class="label-subheading">
+                  The difference you make beyond making money.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -256,8 +279,9 @@ function updateWheel (answers) {
               </div>
               <div class="form-group">
                 <label class="brand-label">Brand Position</label>
-                <div class="label-subheading">What your brand stands for in the minds of
-                  customers.</div>
+                <div class="label-subheading">
+                  What your brand stands for in the minds of customers.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -281,10 +305,10 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Brand Promise</label>
-                  <div class="label-subheading">The overarching value you deliver to
-                    customers.</div>
+                <label class="brand-label">Brand Promise</label>
+                <div class="label-subheading">
+                  The overarching value you deliver to customers.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -308,11 +332,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Brand Pillars</label
-                >
-                <div class="label-subheading">The external values you share with customers
-                  and the behaviors that bring them to life.</div>
+                <label class="brand-label">Brand Pillars</label>
+                <div class="label-subheading">
+                  The external values you share with customers and the behaviors
+                  that bring them to life.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -336,11 +360,10 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Brand Personality</label
-                >
-                <div class="label-subheading">: A description of your brand as if it were
-                  a person.</div>
+                <label class="brand-label">Brand Personality</label>
+                <div class="label-subheading">
+                  : A description of your brand as if it were a person.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -364,19 +387,20 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="btnBox">
-                <button class="btn btn-primary nxtBtn brand-button">Next</button>
+                <button class="btn btn-primary nxtBtn brand-button">
+                  Next
+                </button>
               </div>
             </fieldset>
 
             <fieldset>
               <h2 class="brand-heading">Brand Expressions</h2>
               <div class="form-group">
-                <label
-                class="brand-label">Brand Architecture</label
-                >
-                <div class="label-subheading">The degree to which your company brand
-                  name and product names are associated: branded house, house of
-                  brands or hybrid.</div>
+                <label class="brand-label">Brand Architecture</label>
+                <div class="label-subheading">
+                  The degree to which your company brand name and product names
+                  are associated: branded house, house of brands or hybrid.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -400,11 +424,10 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Tagline</label
-                >
-                <div class="label-subheading">A shorthand reference to your brand position and
-                  promise.</div>
+                <label class="brand-label">Tagline</label>
+                <div class="label-subheading">
+                  A shorthand reference to your brand position and promise.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -428,12 +451,12 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Brand Narrative</label
-                >
-                <div class="label-subheading">A general description of who you are, what
-                  you do and why it matters, including your elevator pitch,
-                  about us statement and company overview.</div>
+                <label class="brand-label">Brand Narrative</label>
+                <div class="label-subheading">
+                  A general description of who you are, what you do and why it
+                  matters, including your elevator pitch, about us statement and
+                  company overview.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -460,9 +483,11 @@ function updateWheel (answers) {
                 <label class="brand-label">
                   ICPs / Customer Personas
                 </label>
-                <div class="label-subheading">A general description of who you are, what
-                  you do and why it matters, including your elevator pitch,
-                  about us statement and company overview.</div>
+                <div class="label-subheading">
+                  A general description of who you are, what you do and why it
+                  matters, including your elevator pitch, about us statement and
+                  company overview.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -486,11 +511,10 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Messaging</label
-                >
-                <div class="label-subheading">Marketing messages that articulate why customers
-                  buy.</div>
+                <label class="brand-label">Messaging</label>
+                <div class="label-subheading">
+                  Marketing messages that articulate why customers buy.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -514,11 +538,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Visual Brand Identity</label
-                >
-                <div class="label-subheading">: A logo that conveys the right image
-                  for your brand across customer touchpoints.</div>
+                <label class="brand-label">Visual Brand Identity</label>
+                <div class="label-subheading">
+                  : A logo that conveys the right image for your brand across
+                  customer touchpoints.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -546,12 +570,11 @@ function updateWheel (answers) {
               </div>
 
               <div class="form-group">
-                <label
-                class="brand-label">Visual Brand Style Guide</label
-                >
-                <div class="label-subheading">Standards for using your logo
-                  correctly, along with typography, color palette and pattern
-                  guidelines.</div>
+                <label class="brand-label">Visual Brand Style Guide</label>
+                <div class="label-subheading">
+                  Standards for using your logo correctly, along with
+                  typography, color palette and pattern guidelines.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -576,11 +599,10 @@ function updateWheel (answers) {
               </div>
 
               <div class="form-group">
-                <label
-                class="brand-label">Brand Voice Guidelines</label
-                >
-                <div class="label-subheading">The tone of voice your brand uses in
-                  writing.</div>
+                <label class="brand-label">Brand Voice Guidelines</label>
+                <div class="label-subheading">
+                  The tone of voice your brand uses in writing.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -608,11 +630,11 @@ function updateWheel (answers) {
               </div>
 
               <div class="form-group">
-                <label
-                class="brand-label">Brand Visual Guidelines</label
-                >
-                <div class="label-subheading">The look and feel of your brand for
-                  graphics, photos and videos.</div>
+                <label class="brand-label">Brand Visual Guidelines</label>
+                <div class="label-subheading">
+                  The look and feel of your brand for graphics, photos and
+                  videos.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -640,12 +662,11 @@ function updateWheel (answers) {
               </div>
 
               <div class="form-group">
-                <label
-                class="brand-label">Brand Experience Guidelines</label
-                >
-                <div class="label-subheading">Your internal company values and
-                  the behaviors that bring them to life to live up to your brand
-                  promise.</div>
+                <label class="brand-label">Brand Experience Guidelines</label>
+                <div class="label-subheading">
+                  Your internal company values and the behaviors that bring them
+                  to life to live up to your brand promise.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -673,19 +694,22 @@ function updateWheel (answers) {
               </div>
 
               <div class="btnBox">
-                <button class="btn btn-default prevBtn brand-button">Previous</button>
-                <button class="btn btn-primary nxtBtn brand-button">Next</button>
+                <button class="btn btn-default prevBtn brand-button">
+                  Previous
+                </button>
+                <button class="btn btn-primary nxtBtn brand-button">
+                  Next
+                </button>
               </div>
             </fieldset>
 
             <fieldset>
               <h2 class="brand-heading">Brand Activation</h2>
               <div class="form-group">
-                <label
-                class="brand-label">Websites</label
-                >
-                <div class="label-subheading">A company website that conveys the right image and
-                  messages.</div>
+                <label class="brand-label">Websites</label>
+                <div class="label-subheading">
+                  A company website that conveys the right image and messages.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -709,11 +733,10 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Sales Funnels</label
-                >
-                <div class="label-subheading">A sale funnel that moves prospects through the
-                  buying process.</div>
+                <label class="brand-label">Sales Funnels</label>
+                <div class="label-subheading">
+                  A sale funnel that moves prospects through the buying process.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -737,11 +760,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Content Marketing</label
-                >
-                <div class="label-subheading">A content strategy that positions your
-                  business as an authority in your industry.</div>
+                <label class="brand-label">Content Marketing</label>
+                <div class="label-subheading">
+                  A content strategy that positions your business as an
+                  authority in your industry.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -768,12 +791,12 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Ads</label
-                >
-                <div class="label-subheading">Ads that communicate the right brand image and messages
-                  while attracting the right prospects and converting them to
-                  qualified leads.</div>
+                <label class="brand-label">Ads</label>
+                <div class="label-subheading">
+                  Ads that communicate the right brand image and messages while
+                  attracting the right prospects and converting them to
+                  qualified leads.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input type="radio" name="Ads" value="d" />Defined</label
@@ -789,11 +812,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Traffic</label
-                >
-                <div class="label-subheading">A plan for consistently driving traffic to your
-                  website that coverts.</div>
+                <label class="brand-label">Traffic</label>
+                <div class="label-subheading">
+                  A plan for consistently driving traffic to your website that
+                  coverts.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -817,12 +840,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Collateral</label
-                >
-                <div class="label-subheading">Digital and printed brochures, product sheets and
-                  booklets that consistently communicate the right image and
-                  messages.</div>
+                <label class="brand-label">Collateral</label>
+                <div class="label-subheading">
+                  Digital and printed brochures, product sheets and booklets
+                  that consistently communicate the right image and messages.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -846,11 +868,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Sales Decks</label
-                >
-                <div class="label-subheading">Sales presentations that consistently
-                  communicate the right image and messages.</div>
+                <label class="brand-label">Sales Decks</label>
+                <div class="label-subheading">
+                  Sales presentations that consistently communicate the right
+                  image and messages.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -874,11 +896,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Event Graphics</label
-                >
-                <div class="label-subheading">Event graphics that consistently communicate
-                  the right image and messages.</div>
+                <label class="brand-label">Event Graphics</label>
+                <div class="label-subheading">
+                  Event graphics that consistently communicate the right image
+                  and messages.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -902,12 +924,11 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="form-group">
-                <label
-                class="brand-label">Social Media</label
-                >
-                <div class="label-subheading">Social media posts that consistently
-                  communicate the right image and messages for each
-                  audience.</div>
+                <label class="brand-label">Social Media</label>
+                <div class="label-subheading">
+                  Social media posts that consistently communicate the right
+                  image and messages for each audience.
+                </div>
                 <div>
                   <label class="radio-inline"
                     ><input
@@ -961,8 +982,12 @@ function updateWheel (answers) {
                 </div>
               </div>
               <div class="btnBox">
-                <button class="btn btn-default prevBtn brand-button">Previous</button>
-                <button class="btn btn-primary subBtn brand-button">Submit</button>
+                <button class="btn btn-default prevBtn brand-button">
+                  Previous
+                </button>
+                <button class="btn btn-primary subBtn brand-button">
+                  Submit
+                </button>
               </div>
             </fieldset>
           </form>
@@ -979,7 +1004,7 @@ function updateWheel (answers) {
             x="0px"
             y="0px"
             viewBox="0 0 749.4 749.4"
-            style="enable-background: new 0 0 749.4 749.4"
+            style="enable-background: new 0 0 749.4 749.4;"
             xml:space="preserve"
           >
             <style type="text/css">
