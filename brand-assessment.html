@@ -24,11 +24,11 @@
           // add these below code changes to our Github and VOILA, UI Wheel issue solved
         if (window.location.href.includes("?")) {
           console.log('COMING FROM A LINK!');
+          $("#bWheel").css("margin-top", "3rem");
           $("#mainImage").hide();
           $("#bg-image").hide();
           $("#home-hero").hide();
           $("#assessment-heading").hide();
-          $("#bWheel").css("margin-top", "6rem");
 
           updateWheel(queryString);
           showWheel();
