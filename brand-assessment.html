@@ -20,10 +20,16 @@
         //check to see if coming from a share link. If so, immediately show wheel
         // console.log(window.location.href.includes("?"))
 
+        // TODO: When Fredric is back from holiday on MONDAY 17TH APRIL...
+          // add these below code changes to our Github and VOILA, UI Wheel issue solved
         if (window.location.href.includes("?")) {
           console.log('COMING FROM A LINK!');
           updateWheel(queryString);
           $("#mainImage").hide();
+          $("#bg-image").hide();
+          $("#home-hero").hide();
+          $("#assessment-heading").hide();
+          $("bWheel").css("margin-top", "6rem");
           showWheel();
         }
 
@@ -548,7 +554,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="brand-label">10. Messaging</label>
+                <label class="brand-label">Messaging</label>
                 <div class="label-subheading">
                   10. Marketing messages that articulate why customers buy.
                 </div>
